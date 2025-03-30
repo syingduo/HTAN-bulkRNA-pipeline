@@ -4,5 +4,5 @@
     "gtf": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/03htan/STAR_GRCh38_d1_vd1_d1_GENCODE_v36/gencode.v36.annotation.gtf",
     "gene_info": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/03htan/STAR_GRCh38_d1_vd1_d1_GENCODE_v36/gencode.gene.info.v36.tsv",
     "fc_strand": 0,
-    "workflow_root": "/diskmnt/Projects/HTAN_analysis_2/bulk_rna_expression/pipeline_workflow"
+    "workflow_root": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/pipeline/fastq2bam2count"
 }
