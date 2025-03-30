@@ -158,7 +158,7 @@ rule featurecounts_readcount:
         bai=rules.star_align.output.sorted_bam + '.bai'
     log: 'logs/featurecounts/{sample}.log'
     params:
-        gtf=GENE_GTF_PTH
+        gtf=GENE_GTF_PTH,
         strand=FC_STRAND
     resources:
         io_heavy=1,

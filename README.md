@@ -52,7 +52,7 @@ conda activate /diskmnt/Projects/Users/s.yingduo/miniconda3/envs/rna-seq
 ### Create a new batch
 
 1. Modify the `snakemake_config.json` to ensure all file paths exist
-2. Make sure the `file_map.tsv` has at least these 9 columns: `Patient_ID`, `HTAN_Specimen_ID`, `Cancer_Type`, `Sample_Type`, `Experiment_Type`, `Tissue`, `Data_Format`, `Data_Format_Details`, `Path`.
+2. Make sure the `file_map.tsv` has at least these 4 columns: `HTAN_Specimen_ID`, `Data_Format`, `Data_Format_Details`, `Path`.
 
 ```
 # Create the result summary of the alignment outputs and readcount TSVs
@@ -61,7 +61,7 @@ snakemake --configfile=snakemake_config.json \
     --cores 64 \
     -p \
     --resources io_heavy=5 -- \
-    make_analysis_summary
+    all_fpkms
 ```
 
 ## Processing description
