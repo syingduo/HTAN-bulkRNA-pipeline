@@ -7,8 +7,8 @@ from snakemake.logging import logger
 
 # The mapping of sample name to other information.
 FILE_MAP_PTH = config['file_map'] # input table
-GENE_GTF_PTH = config['gtf']  # gencode.v34.annotation.gtf
-GENE_INFO_PTH = config['gene_info']  # gencode.gene.info.v34.tsv
+GENE_GTF_PTH = config['gtf']  # gencode.v36.annotation.gtf
+GENE_INFO_PTH = config['gene_info']  # gencode.gene.info.v36.tsv
 WORKFLOW_ROOT = config['workflow_root']  # Path to this repository
 STAR_INDEX_FOLDER = config['star_index']  # Path to the STAR index
 FC_STRAND = config['fc_strand']   # featureCounts strandness option
@@ -19,21 +19,10 @@ SAMPLES = set(pd.read_csv(FILE_MAP_PTH, sep='\t')['HTAN_Specimen_ID'])
 
 # FASTQ map structcure
 FASTQ_MAP = defaultdict(lambda: defaultdict(lambda: {'R1': None, 'R2': None}))
-
-# SAMPLE_INFO structure:
-SampleInfo = namedtuple('SampleInfo', 'patient_id, cancer_type, sample_type, tissue')
-SAMPLE_INFO = {}
 with open(FILE_MAP_PTH) as f:
     reader = csv.DictReader(f, dialect='excel-tab')
     for row in reader:
         sample_id = row['HTAN_Specimen_ID']
-        is_bulk_rna_fastq = (
-            row['Experiment_Type'] == 'Bulk_RNA-Seq' and
-            row['Data_Format'] == 'FASTQ'
-        )
-        if sample_id not in SAMPLES or not is_bulk_rna_fastq:
-            continue
-
         # Update FASTQ_MAP
         fq_pth = Path(row['Path'])
         read_group_id = re.match(r'^(\S+)_R[12].fastq.gz$', fq_pth.name).group(1)
@@ -42,11 +31,6 @@ with open(FILE_MAP_PTH) as f:
             logger.error(f'This row of FASTQ entry is malformatted: {row}')
             raise ValueError(f'Invalid FASTQ format in the file map for {sample_id}')
         FASTQ_MAP[sample_id][read_group_id][read_strand] = fq_pth
-
-        # Upate SAMPLE_INFO
-        SAMPLE_INFO[sample_id] = SampleInfo(
-            row['Patient_ID'], row['Cancer_Type'], row['Sample_Type'], row['Tissue']
-        )
 
 # Validate the FASTQ_MAP
 for sample, read_groups in FASTQ_MAP.items():
@@ -71,7 +55,6 @@ logger.info(
     f'{fastq_map_summary}'
 )
 logger.info('Sample list and FASTQ mapping pass all checks!\n')
-
 
 
 def find_sample_fq_path(wildcards):
@@ -167,18 +150,6 @@ rule samtools_index_bam:
     shell: 'samtools index {input} {output}'
 
 
-rule star_align_all_samples:
-    """Align all RNA-seq samples."""
-    input:
-        all_sorted_bams=expand(rules.star_align.output.sorted_bam, sample=SAMPLES),
-        all_sorted_bam_bais=expand(rules.star_align.output.sorted_bam + '.bai', sample=SAMPLES),
-        all_chimeric_sams=expand(rules.star_align.output.chimeric_sam, sample=SAMPLES),
-        all_chimeric_junctions=expand(rules.star_align.output.chimeric_junction, sample=SAMPLES),
-        all_quant_tx_bams=expand(rules.star_align.output.quant_tx_bam, sample=SAMPLES),
-        all_quant_gene_count_tabs=expand(rules.star_align.output.quant_gene_count_tab, sample=SAMPLES),
-        all_sj_count_tabs=expand(rules.star_align.output.sj_count_tab, sample=SAMPLES)
-
-
 rule featurecounts_readcount:
     """Readcount by featureCounts."""
     output: count_tsv=temp('featurecounts_readcount/{sample}.tsv')
@@ -232,37 +203,3 @@ rule all_featurecounts_readcount:
 rule all_fpkms:
     """FPKM TSVs of all samples."""
     input: fpkms=expand(rules.generate_fpkm.output.fpkm, sample=SAMPLES)
-
-
-rule make_analysis_summary:
-    """Generate the analysis summary table."""
-    input:
-        rules.all_fpkms.input,
-        rules.star_align_all_samples.input
-    output: analysis_summary='analysis_summary.dat'
-    run:
-        result_file_tpls = {
-            ('fpkm_tsv', 'TSV'): rules.generate_fpkm.output.fpkm,
-            ('genomic_bam', 'BAM'): rules.star_align.output.sorted_bam,
-            ('transcriptomic_bam', 'BAM'): rules.star_align.output.quant_tx_bam,
-            ('chimeric_sam', 'SAM'): rules.star_align.output.chimeric_sam,
-            ('splic_junction_tab', 'TSV'): rules.star_align.output.sj_count_tab,
-        }
-        with open(output.analysis_summary, 'w') as f:
-            writer = csv.writer(f, dialect='excel-tab', lineterminator='\n')
-            # Write column header
-            cols = ['#specimen_id', 'patient_id',
-                    'result_type',
-                    'file_path', 'file_format',
-                    'cancer_type', 'sample_type', 'tissue']
-            writer.writerow(cols)
-
-            for sample, info in SAMPLE_INFO.items():
-                for (result_type, file_format), file_path_format in result_file_tpls.items():
-                    abs_file_path = Path(file_path_format.format(sample=sample)).resolve(strict=True)
-                    writer.writerow([
-                        sample, info.patient_id,
-                        result_type,
-                        abs_file_path, file_format,
-                        info.cancer_type, info.sample_type, info.tissue
-                    ])
