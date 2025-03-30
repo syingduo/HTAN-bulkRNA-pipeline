@@ -18,7 +18,7 @@ Possible result types are:
 - fpkm_tsv
 - splic_junction_tab
 
-### Gene expression table (read count, FPKM, and FPKM-UQ)
+### Gene expression table (read count, FPKM, FPKM-UQ and TPM)
 
 Each sample gets its `fpkm_tsv` TSV in the exact same gene order. The output TSV file has the following columns:
 
