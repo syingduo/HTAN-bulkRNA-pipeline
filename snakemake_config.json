@@ -1,0 +1,7 @@
+{
+    "bam_map": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/pipeline/bam2count/file_map.tsv",
+    "workflow_root": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/pipeline/bam2count",
+    "gdc_gtf": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/03htan/STAR_GRCh38_d1_vd1_d1_GENCODE_v36/gencode.v36.annotation.gtf",
+    "gdc_gene_info": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/03htan/STAR_GRCh38_d1_vd1_d1_GENCODE_v36/gencode.gene.info.v36.tsv",
+    "fc_strand": 0
+}
