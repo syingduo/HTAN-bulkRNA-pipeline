@@ -180,7 +180,7 @@ rule star_align_all_samples:
 
 
 rule featurecounts_readcount:
-    """Readcount by featureCounts (unstranded)."""
+    """Readcount by featureCounts."""
     output: count_tsv=temp('featurecounts_readcount/{sample}.tsv')
     input:
         bam=rules.star_align.output.sorted_bam,
