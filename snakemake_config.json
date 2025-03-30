@@ -1,8 +1,8 @@
 {
-    "file_map": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/pipeline/HTAN-bulkRNA-pipeline/file_map.tsv",
     "star_index": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/03htan/STAR_GRCh38_d1_vd1_d1_GENCODE_v36",
     "gtf": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/03htan/STAR_GRCh38_d1_vd1_d1_GENCODE_v36/gencode.v36.annotation.gtf",
     "gene_info": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/03htan/STAR_GRCh38_d1_vd1_d1_GENCODE_v36/gencode.gene.info.v36.tsv",
+    "file_map": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/pipeline/HTAN-bulkRNA-pipeline/file_map.tsv",
     "workflow_root": "/diskmnt/Projects/Users/s.yingduo/03rna-seq/pipeline/HTAN-bulkRNA-pipeline",
     "fc_strand": 0
 }
