@@ -188,6 +188,7 @@ rule featurecounts_readcount:
     log: 'logs/featurecounts/{sample}.log'
     params:
         gtf=GENE_GTF_PTH
+        strand=FC_STRAND
     resources:
         io_heavy=1,
         mem_mb=lambda wildcards, attempt: 16000 + 16000 * (attempt - 1)
